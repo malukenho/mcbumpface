@@ -12,8 +12,9 @@ composer require --dev malukenho/mcbumpface
 
 ### How it works?
 
-By looking at the `composer.lock` file which is (re)generated during 
-`composer install` or `composer update` we can
+By looking at the `composer.lock` file which is (re)generated during
+`composer install` or `composer update` we can replace the required version
+by the installed version.
 
 ### Example
 
