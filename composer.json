@@ -18,7 +18,11 @@
         "phpunit/phpunit": "^7.0.0",
         "infection/infection": "^0.7.1",
         "composer/composer": "^1.6.3",
-        "ext-zip": "*"
+        "ext-zip": "*",
+        "mikey179/vfsStream": "^1.6"
+    },
+    "config": {
+        "sort-packages": true
     },
     "autoload": {
         "psr-4": {
