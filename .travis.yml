@@ -1,0 +1,25 @@
+language: php
+
+sudo: false
+
+php:
+  - 7.1
+  - 7.2
+
+env:
+  - DEPENDENCIES=""
+  - DEPENDENCIES="--prefer-lowest --prefer-stable"
+  - DEPENDENCIES="--classmap-authoritative"
+  - DEPENDENCIES="--no-scripts"
+
+before_script:
+  - composer self-update
+  - composer update --prefer-dist $DEPENDENCIES
+
+script:
+  - ./vendor/bin/phpcs
+  - ./vendor/bin/phpunit --disallow-test-output --coverage-clover ./clover.xml
+  - if [[ $TRAVIS_PHP_VERSION = '7.1' && $DEPENDENCIES = '' ]]; then ./vendor/bin/infection; fi
+
+after_script:
+  - sh .travis.coverage.sh
