@@ -34,6 +34,9 @@
             "MalukenhoTest\\McBumpface\\": "test/"
         }
     },
+    "extra": {
+        "class": "Malukenho\\McBumpface\\BumpInto"
+    },
     "scripts": {
         "post-update-cmd": "Malukenho\\McBumpface\\BumpInto::versions"
     }
