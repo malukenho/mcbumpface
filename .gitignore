@@ -1,0 +1,4 @@
+/vendor/
+composer.phar
+infection-log.txt
+composer.lock
