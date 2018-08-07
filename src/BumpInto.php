@@ -71,6 +71,10 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 continue;
             }
 
+            if ($lockVersion === 'dev-master') {
+                continue;
+            }
+
             $manipulator->addLink($configKey, $package, '^' . $lockVersion, false);
 
             $IO->write(sprintf(

@@ -154,6 +154,18 @@ final class BumpIntoTest extends TestCase
             ],
             [
                 'package' => 'malukenho/zend-framework',
+                'required_version' => 'dev-master-bits',
+                'installed_version' => 'dev-master-bits',
+                'expected' => ['malukenho/zend-framework' => 'dev-master-bits'],
+            ],
+            [
+                'package' => 'malukenho/zend-framework',
+                'required_version' => 'dev-master#4e4cd83e1bc67fef9efca32f30648011d6d319cb',
+                'installed_version' => 'dev-master',
+                'expected' => ['malukenho/zend-framework' => 'dev-master#4e4cd83e1bc67fef9efca32f30648011d6d319cb'],
+            ],
+            [
+                'package' => 'malukenho/zend-framework',
                 'required_version' => 'dev-hackfix-composite-key-serialization as 1.1.1',
                 'installed_version' => 'dev-hackfix-composite-key-serialization',
                 'expected' => ['malukenho/zend-framework' => 'dev-hackfix-composite-key-serialization as 1.1.1'],
