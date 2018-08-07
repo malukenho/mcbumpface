@@ -63,6 +63,10 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
             }
             $lockVersion = $lockVersions[$package];
 
+            if (false !== strpos($version, ' as ')) {
+                continue;
+            }
+
             if (self::isSimilar($version, $lockVersion)) {
                 continue;
             }

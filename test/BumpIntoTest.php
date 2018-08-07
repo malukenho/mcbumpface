@@ -152,6 +152,12 @@ final class BumpIntoTest extends TestCase
                 'installed_version' => '1.9.6',
                 'expected' => ['malukenho/docheader' => '^1.9.6'],
             ],
+            [
+                'package' => 'malukenho/zend-framework',
+                'required_version' => 'dev-hackfix-composite-key-serialization as 1.1.1',
+                'installed_version' => 'dev-hackfix-composite-key-serialization',
+                'expected' => ['malukenho/zend-framework' => 'dev-hackfix-composite-key-serialization as 1.1.1'],
+            ],
         ];
     }
 }
