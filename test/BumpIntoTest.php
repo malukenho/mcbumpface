@@ -135,41 +135,78 @@ final class BumpIntoTest extends TestCase
     }
 
     /**
-     * @return string[][]
+     * @return string[][]|iterable
      */
-    public function providerVersions() : array
+    public function providerVersions() : iterable
     {
-        return [
-            [
-                'package' => 'malukenho/docheader',
-                'required_version' => '^1.0',
-                'installed_version' => '1.0.0',
-                'expected' => ['malukenho/docheader' => '^1.0.0'],
-            ],
-            [
-                'package' => 'malukenho/docheader',
-                'required_version' => '^1.3',
-                'installed_version' => '1.9.6',
-                'expected' => ['malukenho/docheader' => '^1.9.6'],
-            ],
-            [
-                'package' => 'malukenho/zend-framework',
-                'required_version' => 'dev-master-bits',
-                'installed_version' => 'dev-master-bits',
-                'expected' => ['malukenho/zend-framework' => 'dev-master-bits'],
-            ],
-            [
-                'package' => 'malukenho/zend-framework',
-                'required_version' => 'dev-master#4e4cd83e1bc67fef9efca32f30648011d6d319cb',
-                'installed_version' => 'dev-master',
-                'expected' => ['malukenho/zend-framework' => 'dev-master#4e4cd83e1bc67fef9efca32f30648011d6d319cb'],
-            ],
-            [
-                'package' => 'malukenho/zend-framework',
-                'required_version' => 'dev-hackfix-composite-key-serialization as 1.1.1',
-                'installed_version' => 'dev-hackfix-composite-key-serialization',
-                'expected' => ['malukenho/zend-framework' => 'dev-hackfix-composite-key-serialization as 1.1.1'],
-            ],
+        yield '^1.0' => [
+            'package' => 'malukenho/docheader',
+            'required_version' => '^1.0',
+            'installed_version' => '1.0.0',
+            'expected' => ['malukenho/docheader' => '^1.0.0'],
+        ];
+
+        yield '^v1.0' => [
+            'package' => 'malukenho/docheader',
+            'required_version' => '^v1.0',
+            'installed_version' => 'v1.0.0',
+            'expected' => ['malukenho/docheader' => '^1.0.0'],
+        ];
+
+        yield '^1.3' => [
+            'package' => 'malukenho/docheader',
+            'required_version' => '^1.3',
+            'installed_version' => '1.9.6',
+            'expected' => ['malukenho/docheader' => '^1.9.6'],
+        ];
+
+        yield 'dev-master-bits' => [
+            'package' => 'malukenho/zend-framework',
+            'required_version' => 'dev-master-bits',
+            'installed_version' => 'dev-master-bits',
+            'expected' => ['malukenho/zend-framework' => 'dev-master-bits'],
+        ];
+
+        yield 'dev-master#4e4cd83e1bc67fef9efca32f30648011d6d319cb' => [
+            'package' => 'malukenho/zend-framework',
+            'required_version' => 'dev-master#4e4cd83e1bc67fef9efca32f30648011d6d319cb',
+            'installed_version' => 'dev-master',
+            'expected' => ['malukenho/zend-framework' => 'dev-master#4e4cd83e1bc67fef9efca32f30648011d6d319cb'],
+        ];
+
+        yield 'dev-hackfix-composite-key-serialization' => [
+            'package' => 'malukenho/zend-framework',
+            'required_version' => 'dev-hackfix-composite-key-serialization as 1.1.1',
+            'installed_version' => 'dev-hackfix-composite-key-serialization',
+            'expected' => ['malukenho/zend-framework' => 'dev-hackfix-composite-key-serialization as 1.1.1'],
+        ];
+
+        yield 'dev-hackfix-composite-key-serialization as v1.1.1' => [
+            'package' => 'malukenho/zend-framework',
+            'required_version' => 'dev-hackfix-composite-key-serialization as v1.1.1',
+            'installed_version' => 'dev-hackfix-composite-key-serialization',
+            'expected' => ['malukenho/zend-framework' => 'dev-hackfix-composite-key-serialization as v1.1.1'],
+        ];
+
+        yield 'dev-master@dev' => [
+            'package' => 'malukenho/zend-framework',
+            'required_version' => 'dev-master@dev',
+            'installed_version' => 'dev-master@dev',
+            'expected' => ['malukenho/zend-framework' => 'dev-master@dev'],
+        ];
+
+        yield '@dev' => [
+            'package' => 'malukenho/zend-framework',
+            'required_version' => '@dev',
+            'installed_version' => '@dev',
+            'expected' => ['malukenho/zend-framework' => '@dev'],
+        ];
+
+        yield '1.0.0' => [
+            'package' => 'malukenho/zend-framework',
+            'required_version' => '1.0.0',
+            'installed_version' => '1.0.0',
+            'expected' => ['malukenho/zend-framework' => '1.0.0'],
         ];
     }
 }

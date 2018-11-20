@@ -20,6 +20,7 @@ use function array_merge;
 use function file_get_contents;
 use function file_put_contents;
 use function iterator_to_array;
+use function ltrim;
 use function sprintf;
 use function str_replace;
 use function strpos;
@@ -63,7 +64,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
             }
             $lockVersion = $lockVersions[$package];
 
-            if (false !== strpos($version, ' as ')) {
+            if (strpos($version, ' as ') !== false) {
                 continue;
             }
 
@@ -75,7 +76,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 continue;
             }
 
-            $manipulator->addLink($configKey, $package, '^' . $lockVersion, false);
+            $manipulator->addLink($configKey, $package, '^' . ltrim($lockVersion, 'v'), false);
 
             $IO->write(sprintf(
                 'Updating <info>%s</info>%s package from version (<info>%s</info>) to (<info>%s</info>)',
