@@ -19,11 +19,11 @@ use function array_key_exists;
 use function array_merge;
 use function file_get_contents;
 use function file_put_contents;
+use function is_numeric;
 use function iterator_to_array;
-use function ltrim;
 use function sprintf;
-use function str_replace;
 use function strpos;
+use function trim;
 
 final class BumpInto implements PluginInterface, EventSubscriberInterface
 {
@@ -76,16 +76,38 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 continue;
             }
 
-            $manipulator->addLink($configKey, $package, '^' . ltrim($lockVersion, 'v'), false);
+            if (self::isLockedVersion($version)) {
+                $manipulator->addLink($configKey, $package, $lockVersion, false);
+
+                $IO->write(sprintf(
+                    '<info>malukenho/mcbumpface</info> is expanding <info>%s</info>%s package locked version from (<info>%s</info>) to (<info>%s</info>)',
+                    $package,
+                    $configKey === 'require-dev' ? ' dev' : '',
+                    $version,
+                    $lockVersion
+                ));
+
+                continue;
+            }
+
+            $manipulator->addLink($configKey, $package, '^' . $lockVersion, false);
 
             $IO->write(sprintf(
-                'Updating <info>%s</info>%s package from version (<info>%s</info>) to (<info>%s</info>)',
+                '<info>malukenho/mcbumpface</info> is updating <info>%s</info>%s package from version (<info>%s</info>) to (<info>%s</info>)',
                 $package,
                 $configKey === 'require-dev' ? ' dev' : '',
                 $version,
                 '^' . $lockVersion
             ));
         }
+    }
+
+    private static function isLockedVersion(string $version) : bool
+    {
+        // Just by checking if the version is numeric
+        // we guarantee that $version is a string
+        // with numbers and dots.
+        return is_numeric($version);
     }
 
     /**
@@ -165,6 +187,6 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
 
     private static function isSimilar(string $version, string $lockVersion) : bool
     {
-        return str_replace('^', '', $version) === str_replace('^', '', $lockVersion);
+        return trim($version, '^v') === trim($lockVersion, '^v');
     }
 }

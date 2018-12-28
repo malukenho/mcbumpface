@@ -146,11 +146,18 @@ final class BumpIntoTest extends TestCase
             'expected' => ['malukenho/docheader' => '^1.0.0'],
         ];
 
-        yield '^v1.0' => [
+        yield 'version with leading "v" char' => [
             'package' => 'malukenho/docheader',
-            'required_version' => '^v1.0',
+            'required_version' => '^1.0',
+            'installed_version' => 'v1.0.1',
+            'expected' => ['malukenho/docheader' => '^v1.0.1'],
+        ];
+
+        yield 'locked versions should not be marked for updated' => [
+            'package' => 'malukenho/docheader',
+            'required_version' => '1.0',
             'installed_version' => 'v1.0.0',
-            'expected' => ['malukenho/docheader' => '^1.0.0'],
+            'expected' => ['malukenho/docheader' => 'v1.0.0'],
         ];
 
         yield '^1.3' => [
