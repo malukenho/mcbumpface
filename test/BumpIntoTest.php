@@ -153,6 +153,13 @@ final class BumpIntoTest extends TestCase
             'expected' => ['malukenho/docheader' => '^v1.0.1'],
         ];
 
+        yield 'locked versions should not be marked for updated' => [
+            'package' => 'malukenho/docheader',
+            'required_version' => '1.0',
+            'installed_version' => 'v1.0.0',
+            'expected' => ['malukenho/docheader' => 'v1.0.0'],
+        ];
+
         yield '^1.3' => [
             'package' => 'malukenho/docheader',
             'required_version' => '^1.3',

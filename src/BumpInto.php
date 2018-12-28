@@ -19,6 +19,7 @@ use function array_key_exists;
 use function array_merge;
 use function file_get_contents;
 use function file_put_contents;
+use function is_numeric;
 use function iterator_to_array;
 use function sprintf;
 use function strpos;
@@ -75,6 +76,20 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 continue;
             }
 
+            if (self::isLockedVersion($version)) {
+                $manipulator->addLink($configKey, $package, $lockVersion, false);
+
+                $IO->write(sprintf(
+                    '<info>malukenho/mcbumpface</info> is expanding <info>%s</info>%s package locked version from (<info>%s</info>) to (<info>%s</info>)',
+                    $package,
+                    $configKey === 'require-dev' ? ' dev' : '',
+                    $version,
+                    $lockVersion
+                ));
+
+                continue;
+            }
+
             $manipulator->addLink($configKey, $package, '^' . $lockVersion, false);
 
             $IO->write(sprintf(
@@ -85,6 +100,14 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 '^' . $lockVersion
             ));
         }
+    }
+
+    private static function isLockedVersion(string $version) : bool
+    {
+        // Just by checking if the version is numeric
+        // we guarantee that $version is a string
+        // with numbers and dots.
+        return is_numeric($version);
     }
 
     /**
