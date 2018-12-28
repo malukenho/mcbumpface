@@ -20,10 +20,9 @@ use function array_merge;
 use function file_get_contents;
 use function file_put_contents;
 use function iterator_to_array;
-use function ltrim;
 use function sprintf;
-use function str_replace;
 use function strpos;
+use function trim;
 
 final class BumpInto implements PluginInterface, EventSubscriberInterface
 {
@@ -76,10 +75,10 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 continue;
             }
 
-            $manipulator->addLink($configKey, $package, '^' . ltrim($lockVersion, 'v'), false);
+            $manipulator->addLink($configKey, $package, '^' . $lockVersion, false);
 
             $IO->write(sprintf(
-                'Updating <info>%s</info>%s package from version (<info>%s</info>) to (<info>%s</info>)',
+                '<info>malukenho/mcbumpface</info> is updating <info>%s</info>%s package from version (<info>%s</info>) to (<info>%s</info>)',
                 $package,
                 $configKey === 'require-dev' ? ' dev' : '',
                 $version,
@@ -165,6 +164,6 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
 
     private static function isSimilar(string $version, string $lockVersion) : bool
     {
-        return str_replace('^', '', $version) === str_replace('^', '', $lockVersion);
+        return trim($version, '^v') === trim($lockVersion, '^v');
     }
 }
