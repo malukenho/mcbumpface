@@ -16,7 +16,7 @@
     "require-dev": {
         "doctrine/coding-standard": "^4.0",
         "phpunit/phpunit": "^7.0.0",
-        "infection/infection": "^0.13.5",
+        "infection/infection": "^0.14.1",
         "composer/composer": "^1.6.3",
         "ext-zip": "*",
         "mikey179/vfsStream": "^1.6"
