@@ -7,6 +7,7 @@ namespace Malukenho\McBumpface;
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
+use Composer\Json\JsonFile;
 use Composer\Json\JsonManipulator;
 use Composer\Package\Link;
 use Composer\Package\Locker;
@@ -15,14 +16,17 @@ use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
 use Generator;
+use const PATHINFO_EXTENSION;
 use function array_key_exists;
 use function array_merge;
 use function file_get_contents;
 use function file_put_contents;
 use function is_numeric;
 use function iterator_to_array;
+use function pathinfo;
 use function sprintf;
 use function strpos;
+use function substr;
 use function trim;
 
 final class BumpInto implements PluginInterface, EventSubscriberInterface
@@ -31,20 +35,29 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
     {
         $io               = $composerEvent->getIO();
         $composer         = $composerEvent->getComposer();
+        $locker           = $composer->getLocker();
         $rootPackage      = $composer->getPackage();
         $composerJsonFile = $composer->getConfig()->getConfigSource()->getName();
+        $composerLockFile = (pathinfo($composerJsonFile, PATHINFO_EXTENSION) === 'json')
+            ? substr($composerJsonFile, 0, -4) . 'lock'
+            : $composerJsonFile . '.lock';
 
         $contents    = file_get_contents($composerJsonFile);
         $manipulator = new JsonManipulator($contents);
 
-        $lockVersions        = iterator_to_array(self::getInstalledVersions($composer->getLocker(), $rootPackage));
+        $lockVersions        = iterator_to_array(self::getInstalledVersions($locker, $rootPackage));
         $requiredVersions    = self::getRequiredVersion($rootPackage);
         $requiredDevVersions = self::getRequiredDevVersion($rootPackage);
 
         self::updateDependencies($io, $manipulator, 'require', $requiredVersions, $lockVersions);
         self::updateDependencies($io, $manipulator, 'require-dev', $requiredDevVersions, $lockVersions);
 
-        file_put_contents($composerJsonFile, $manipulator->getContents());
+        $contents    = $manipulator->getContents();
+        $contentHash = Locker::getContentHash($contents);
+
+        file_put_contents($composerJsonFile, $contents);
+
+        self::updateLockContentHash($composerLockFile, $contentHash);
     }
 
     /**
@@ -108,6 +121,16 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         // we guarantee that $version is a string
         // with numbers and dots.
         return is_numeric($version);
+    }
+
+    private static function updateLockContentHash(string $composerLockFile, string $contentHash) : void
+    {
+        $lockFile = new JsonFile($composerLockFile);
+        $lockData = $lockFile->read();
+
+        $lockData['content-hash'] = $contentHash;
+
+        $lockFile->write($lockData);
     }
 
     /**
