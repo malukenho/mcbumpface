@@ -14,7 +14,7 @@
         "composer-plugin-api": "^1.0.0"
     },
     "require-dev": {
-        "doctrine/coding-standard": "^4.0",
+        "doctrine/coding-standard": "^7.0",
         "phpunit/phpunit": "^7.0.0",
         "infection/infection": "^0.15.0",
         "composer/composer": "^1.6.3",
