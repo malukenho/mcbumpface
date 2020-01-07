@@ -16,7 +16,6 @@ use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
 use Generator;
-use const PATHINFO_EXTENSION;
 use function array_key_exists;
 use function array_merge;
 use function file_get_contents;
@@ -28,6 +27,7 @@ use function sprintf;
 use function strpos;
 use function substr;
 use function trim;
+use const PATHINFO_EXTENSION;
 
 final class BumpInto implements PluginInterface, EventSubscriberInterface
 {
@@ -38,7 +38,8 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         $locker           = $composer->getLocker();
         $rootPackage      = $composer->getPackage();
         $composerJsonFile = $composer->getConfig()->getConfigSource()->getName();
-        $composerLockFile = (pathinfo($composerJsonFile, PATHINFO_EXTENSION) === 'json')
+
+        $composerLockFile = pathinfo($composerJsonFile, PATHINFO_EXTENSION) === 'json'
             ? substr($composerJsonFile, 0, -4) . 'lock'
             : $composerJsonFile . '.lock';
 
@@ -75,6 +76,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
             if (! array_key_exists($package, $lockVersions)) {
                 continue;
             }
+
             $lockVersion = $lockVersions[$package];
 
             if (strpos($version, ' as ') !== false) {
@@ -168,6 +170,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
             if ($version === 'self.version') {
                 $version = $rootPackage->getVersion();
             }
+
             yield $replace->getTarget() => $version;
         }
 
