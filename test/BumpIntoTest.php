@@ -4,52 +4,52 @@ declare(strict_types=1);
 
 namespace MalukenhoTest\McBumpface;
 
-use Composer\Composer;
-use Composer\Config;
+use Composer\Factory;
 use Composer\IO\IOInterface;
-use Composer\Package\Link;
 use Composer\Package\Locker;
-use Composer\Package\RootPackageInterface;
 use Composer\Script\Event;
-use Composer\Semver\Constraint\ConstraintInterface;
 use Malukenho\McBumpface\BumpInto;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamFile;
 use PHPUnit\Framework\TestCase;
 use function file_get_contents;
+use function file_put_contents;
 use function json_decode;
+use function mkdir;
 use function sprintf;
+use function sys_get_temp_dir;
 use function uniqid;
 
 final class BumpIntoTest extends TestCase
 {
     /**
-     * @test
-     *
      * @param string[] $expected expected end structure
      *
+     * @test
      * @dataProvider providerVersions
      */
     public function updateVersions(string $requiredPackage, string $requiredVersion, string $installedVersion, array $expected) : void
     {
-        $fileName = uniqid('file', true) . '.json';
-        $fakeDir  = vfsStream::setup('fakeDir');
+        $directory = sys_get_temp_dir() . '/' . uniqid('test-composer', false);
 
-        $fileStream = new vfsStreamFile($fileName);
-        $fileStream->write(sprintf('{
+        mkdir($directory);
+
+        file_put_contents($directory . '/composer.json', sprintf('{
             "require": {
                 "%s": "%s"
             }
         }', $requiredPackage, $requiredVersion));
 
-        $fakeDir->addChild($fileStream);
+        file_put_contents($directory . '/composer.lock', sprintf('{
+            "content-hash": "fake-hash",
+            "packages": [{
+                "name": "%s",
+                "version": "%s"
+            }]
+        }', $requiredPackage, $installedVersion));
 
         $composerEvent = $this->createMock(Event::class);
         $IOInterface   = $this->createMock(IOInterface::class);
-        $composer      = $this->createMock(Composer::class);
-        $config        = $this->createMock(Config::class);
-        $configSource  = $this->createMock(Config\ConfigSourceInterface::class);
-        $package       = $this->createMock(RootPackageInterface::class);
+        $composer      = (new Factory())
+            ->createComposer($IOInterface, $directory . '/composer.json', false, $directory);
 
         $composerEvent
             ->expects(self::once())
@@ -61,76 +61,15 @@ final class BumpIntoTest extends TestCase
             ->method('getComposer')
             ->willReturn($composer);
 
-        $composer
-            ->expects(self::once())
-            ->method('getConfig')
-            ->willReturn($config);
-
-        $composer
-            ->expects(self::once())
-            ->method('getPackage')
-            ->willReturn($package);
-
-        $config
-            ->expects(self::once())
-            ->method('getConfigSource')
-            ->willReturn($configSource);
-
-        $configSource
-            ->expects(self::once())
-            ->method('getName')
-            ->willReturn(vfsStream::url('fakeDir') . '/' . $fileName);
-
-        $locker = $this->createMock(Locker::class);
-        $locker
-            ->expects(self::once())
-            ->method('getLockData')
-            ->willReturn([
-                'packages' => [
-                    [
-                        'name' => $requiredPackage,
-                        'version' => $installedVersion,
-                    ],
-                ],
-             ]);
-
-        $package
-            ->expects(self::once())
-            ->method('getReplaces')
-            ->willReturn([]);
-
-        $composer
-            ->expects(self::once())
-            ->method('getLocker')
-            ->willReturn($locker);
-
-        $link       = $this->createMock(Link::class);
-        $constraint = $this->createMock(ConstraintInterface::class);
-
-        $link
-            ->expects(self::once())
-            ->method('getConstraint')
-            ->willReturn($constraint);
-
-        $constraint
-            ->expects(self::once())
-            ->method('getPrettyString')
-            ->willReturn($requiredVersion);
-
-        $package
-            ->expects(self::once())
-            ->method('getRequires')
-            ->willReturn([$requiredPackage => $link]);
-
-        $package
-            ->expects(self::once())
-            ->method('getDevRequires')
-            ->willReturn([]);
-
         BumpInto::versions($composerEvent);
 
-        $composerFinalContent = file_get_contents(vfsStream::url('fakeDir') . '/' . $fileName);
+        $composerFinalContent     = file_get_contents($directory . '/composer.json');
+        $composerLockFinalContent = file_get_contents($directory . '/composer.lock');
 
+        self::assertSame(
+            Locker::getContentHash($composerFinalContent),
+            json_decode($composerLockFinalContent, true)['content-hash']
+        );
         self::assertSame(['require' => $expected], json_decode($composerFinalContent, true));
     }
 
