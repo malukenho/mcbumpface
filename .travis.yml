@@ -3,17 +3,13 @@ language: php
 sudo: false
 
 php:
-  - 7.1
   - 7.2
-
-env:
-  - DEPENDENCIES=""
-  - DEPENDENCIES="--prefer-lowest --prefer-stable"
-  - DEPENDENCIES="--classmap-authoritative"
+  - 7.3
+  - 7.4
 
 before_script:
   - composer self-update
-  - composer update --prefer-dist $DEPENDENCIES
+  - composer install
 
 script:
   - ./vendor/bin/phpcs
