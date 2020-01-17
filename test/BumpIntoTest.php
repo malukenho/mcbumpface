@@ -127,6 +127,13 @@ final class BumpIntoTest extends TestCase
             'expected' => ['malukenho/zend-framework' => 'dev-hackfix-composite-key-serialization as 1.1.1'],
         ];
 
+        yield 'dev-hackfix-composite-key-serialization@dev' => [
+            'package' => 'malukenho/zend-framework',
+            'required_version' => 'dev-hackfix-composite-key-serialization@dev',
+            'installed_version' => 'dev-hackfix-composite-key-serialization',
+            'expected' => ['malukenho/zend-framework' => 'dev-hackfix-composite-key-serialization@dev'],
+        ];
+
         yield 'dev-hackfix-composite-key-serialization as v1.1.1' => [
             'package' => 'malukenho/zend-framework',
             'required_version' => 'dev-hackfix-composite-key-serialization as v1.1.1',
