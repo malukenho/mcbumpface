@@ -51,8 +51,9 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         $requiredVersions    = self::getRequiredVersion($rootPackage);
         $requiredDevVersions = self::getRequiredDevVersion($rootPackage);
 
-        self::updateDependencies($io, $manipulator, 'require', $requiredVersions, $lockVersions);
-        self::updateDependencies($io, $manipulator, 'require-dev', $requiredDevVersions, $lockVersions);
+        $options = ComposerOptions::fromRootPackage($rootPackage);
+        self::updateDependencies($io, $manipulator, 'require', $requiredVersions, $lockVersions, $options);
+        self::updateDependencies($io, $manipulator, 'require-dev', $requiredDevVersions, $lockVersions, $options);
 
         $contents    = $manipulator->getContents();
         $contentHash = Locker::getContentHash($contents);
@@ -71,14 +72,13 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         JsonManipulator $manipulator,
         string $configKey,
         array $requiredVersions,
-        array $lockVersions
+        array $lockVersions,
+        ComposerOptions $options
     ) : void {
         foreach ($requiredVersions as $package => $version) {
             if (! array_key_exists($package, $lockVersions)) {
                 continue;
             }
-
-            $lockVersion = $lockVersions[$package];
 
             if (strpos($version, ' as ') !== false) {
                 continue;
@@ -88,6 +88,8 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 continue;
             }
 
+            $lockVersion = $lockVersions[$package];
+
             if (self::isSimilar($version, $lockVersion)) {
                 continue;
             }
@@ -95,6 +97,8 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
             if ($lockVersion === 'dev-master') {
                 continue;
             }
+
+            $lockVersion = $options->manipulateVersionIfNeeded($lockVersion);
 
             if (self::isLockedVersion($version)) {
                 $manipulator->addLink($configKey, $package, $lockVersion, false);
@@ -166,6 +170,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
     {
         $lockData                 = $locker->getLockData();
         $lockData['packages-dev'] = $lockData['packages-dev'] ?? [];
+
         foreach (array_merge($lockData['packages'], $lockData['packages-dev']) as $package) {
             yield $package['name'] => $package['version'];
         }
