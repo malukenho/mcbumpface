@@ -9,34 +9,34 @@ use Composer\IO\IOInterface;
 use Composer\Package\Locker;
 use Composer\Script\Event;
 use Malukenho\McBumpface\BumpInto;
+use Malukenho\McBumpface\ComposerOptions;
 use PHPUnit\Framework\TestCase;
 use function file_get_contents;
 use function file_put_contents;
 use function json_decode;
+use function json_encode;
 use function mkdir;
 use function sprintf;
 use function sys_get_temp_dir;
 use function uniqid;
+use const JSON_THROW_ON_ERROR;
 
 final class BumpIntoTest extends TestCase
 {
     /**
-     * @param string[] $expected expected end structure
+     * @param string[]            $expected expected end structure
+     * @param array<string,mixed> $options  optional composer options provided via `extra`
      *
      * @test
      * @dataProvider providerVersions
      */
-    public function updateVersions(string $requiredPackage, string $requiredVersion, string $installedVersion, array $expected) : void
+    public function updateVersions(string $requiredPackage, string $requiredVersion, string $installedVersion, array $expected, array $options = []) : void
     {
         $directory = sys_get_temp_dir() . '/' . uniqid('test-composer', false);
 
         mkdir($directory);
 
-        file_put_contents($directory . '/composer.json', sprintf('{
-            "require": {
-                "%s": "%s"
-            }
-        }', $requiredPackage, $requiredVersion));
+        file_put_contents($directory . '/composer.json', $this->createComposerFile($requiredPackage, $requiredVersion, $options));
 
         file_put_contents($directory . '/composer.lock', sprintf('{
             "content-hash": "fake-hash",
@@ -70,7 +70,7 @@ final class BumpIntoTest extends TestCase
             Locker::getContentHash($composerFinalContent),
             json_decode($composerLockFinalContent, true)['content-hash']
         );
-        self::assertSame(['require' => $expected], json_decode($composerFinalContent, true));
+        self::assertSame($expected, json_decode($composerFinalContent, true, 512, JSON_THROW_ON_ERROR)['require'] ?? []);
     }
 
     /**
@@ -161,5 +161,32 @@ final class BumpIntoTest extends TestCase
             'installed_version' => '1.0.0',
             'expected' => ['malukenho/zend-framework' => '1.0.0'],
         ];
+
+        yield 'version with leading "v" char but version prefixes are disabled via options' => [
+            'package' => 'malukenho/docheader',
+            'required_version' => '^1.0',
+            'installed_version' => 'v1.0.1',
+            'expected' => ['malukenho/docheader' => '^1.0.1'],
+            'options' => ['stripVersionPrefixes' => true],
+        ];
+    }
+
+    /**
+     * @param array<string,mixed> $options
+     */
+    private function createComposerFile(string $requiredPackage, string $requiredVersion, array $options = []) : string
+    {
+        if ($options === []) {
+            return sprintf('{
+                "require": {
+                    "%s": "%s"
+                }
+            }', $requiredPackage, $requiredVersion);
+        }
+
+        return json_encode([
+            'require' => [$requiredPackage => $requiredVersion],
+            'extra' => [ComposerOptions::EXTRA_IDENTIFIER => $options],
+        ]);
     }
 }
