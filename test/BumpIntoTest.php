@@ -19,7 +19,6 @@ use function mkdir;
 use function sprintf;
 use function sys_get_temp_dir;
 use function uniqid;
-use const JSON_THROW_ON_ERROR;
 
 final class BumpIntoTest extends TestCase
 {
@@ -70,7 +69,7 @@ final class BumpIntoTest extends TestCase
             Locker::getContentHash($composerFinalContent),
             json_decode($composerLockFinalContent, true)['content-hash']
         );
-        self::assertSame($expected, json_decode($composerFinalContent, true, 512, JSON_THROW_ON_ERROR)['require'] ?? []);
+        self::assertSame($expected, json_decode($composerFinalContent, true)['require'] ?? []);
     }
 
     /**
