@@ -37,17 +37,4 @@ final class ComposerOptions
 
         return (string) preg_replace('/^v(?<version>.*)/', '\1', $version);
     }
-
-    /**
-     * @return array<string,mixed>
-     */
-    public function array() : array
-    {
-        $options = [];
-        foreach ($this as $property => $value) {
-            $options[$property] = $value;
-        }
-
-        return $options;
-    }
 }
