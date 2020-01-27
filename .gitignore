@@ -3,3 +3,4 @@ composer.phar
 infection-log.txt
 composer.lock
 .phpcs-cache
+.phpunit.result.cache

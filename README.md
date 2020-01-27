@@ -41,3 +41,25 @@ my `composer.json` will looks like the following:
     }
 }
 ```
+
+### Configuration (optional)
+
+By adding an extra configuration to the projects `composer.json`, you can configure different behavior of the version bumping.
+The configuration can be added like this:
+```json
+{
+    "extra": {
+        "mc-bumpface": {
+            "stripVersionPrefixes": false
+        }
+    }
+}
+```
+
+The following configurations are available:
+
+- [stripVersionPrefixes](#configuration-stripVersionPrefixes)
+
+###### stripVersionPrefixes (default: false)
+<a name="configuration-stripVersionPrefixes"></a> 
+By setting this parameter to `true`, `mcbumpface` will strip the `v` prefix from versions (in case they are tagged like this).  
