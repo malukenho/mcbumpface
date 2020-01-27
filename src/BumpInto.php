@@ -23,6 +23,7 @@ use function file_put_contents;
 use function is_numeric;
 use function iterator_to_array;
 use function pathinfo;
+use function preg_match;
 use function sprintf;
 use function strpos;
 use function substr;
@@ -80,6 +81,10 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
             $lockVersion = $lockVersions[$package];
 
             if (strpos($version, ' as ') !== false) {
+                continue;
+            }
+
+            if (preg_match('~^dev-[\w-]+@dev$~', $version) === 1) {
                 continue;
             }
 
