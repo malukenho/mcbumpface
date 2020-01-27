@@ -11,7 +11,7 @@ final class ComposerOptions
     public const EXTRA_IDENTIFIER = 'mc-bumpface';
 
     /**
-     * With this parameter, you can configure your project to either keep or drop non-numbers from version.
+     * With this parameter, you can configure your project to either keep or drop the version `v` prefix from versions.
      *
      * @var bool
      */
