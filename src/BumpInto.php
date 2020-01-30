@@ -84,7 +84,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 continue;
             }
 
-            if (preg_match('~^dev-[\w-]+@dev$~', $version) === 1) {
+            if (preg_match('~^dev-.+@dev$~', $version) === 1) {
                 continue;
             }
 
