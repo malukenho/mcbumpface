@@ -14,11 +14,12 @@
         "composer-plugin-api": "^1.0.0"
     },
     "require-dev": {
-        "doctrine/coding-standard": "^7.0.2",
-        "phpunit/phpunit": "^8.5.2",
-        "infection/infection": "^0.15.0",
+        "ext-json": "*",
+        "ext-zip": "*",
         "composer/composer": "^1.9.2",
-        "ext-zip": "*"
+        "doctrine/coding-standard": "^7.0.2",
+        "infection/infection": "^0.15.0",
+        "phpunit/phpunit": "^8.5.2"
     },
     "config": {
         "sort-packages": true
