@@ -161,6 +161,20 @@ final class BumpIntoTest extends TestCase
             'expected' => ['malukenho/zend-framework' => '1.0.0'],
         ];
 
+        yield '~2.0.23' => [
+            'package' => 'malukenho/zend-framework',
+            'required_version' => '~2.0.20',
+            'installed_version' => '2.0.30',
+            'expected' => ['malukenho/zend-framework' => '~2.0.30'],
+        ];
+
+        yield '~1.2' => [
+            'package' => 'malukenho/zend-framework',
+            'required_version' => '~1.2',
+            'installed_version' => '1.2.3',
+            'expected' => ['malukenho/zend-framework' => '~1.2.3'],
+        ];
+
         yield 'version with leading "v" char but version prefixes are disabled via options' => [
             'package' => 'malukenho/docheader',
             'required_version' => '^1.0',

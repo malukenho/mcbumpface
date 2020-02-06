@@ -80,6 +80,11 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 continue;
             }
 
+            // Skip complex ranges for now
+            if (strpos($version, ',') !== false) {
+                continue;
+            }
+
             if (strpos($version, ' as ') !== false) {
                 continue;
             }
@@ -87,6 +92,8 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
             if (preg_match('~^dev-.+@dev$~', $version) === 1) {
                 continue;
             }
+
+            $sign = self::extractVersionRangeSign($version);
 
             $lockVersion = $lockVersions[$package];
 
@@ -114,14 +121,14 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 continue;
             }
 
-            $manipulator->addLink($configKey, $package, '^' . $lockVersion, false);
+            $manipulator->addLink($configKey, $package, $sign . $lockVersion, false);
 
             $IO->write(sprintf(
                 '<info>malukenho/mcbumpface</info> is updating <info>%s</info>%s package from version (<info>%s</info>) to (<info>%s</info>)',
                 $package,
                 $configKey === 'require-dev' ? ' dev' : '',
                 $version,
-                '^' . $lockVersion
+                $sign . $lockVersion
             ));
         }
     }
@@ -142,6 +149,19 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         $lockData['content-hash'] = $contentHash;
 
         $lockFile->write($lockData);
+    }
+
+    private static function extractVersionRangeSign(string $version) : string
+    {
+        if (strpos($version, '~') === 0) {
+            return '~';
+        }
+
+        if (strpos($version, '^') === 0) {
+            return '^';
+        }
+
+        return '^';
     }
 
     /**
