@@ -16,7 +16,7 @@
     "require-dev": {
         "ext-json": "*",
         "ext-zip": "*",
-        "composer/composer": "^1.9.2",
+        "composer/composer": "^1.9.3",
         "doctrine/coding-standard": "^7.0.2",
         "infection/infection": "^0.15.0",
         "phpunit/phpunit": "^8.5.2"
