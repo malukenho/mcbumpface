@@ -18,6 +18,7 @@ use Composer\Script\ScriptEvents;
 use Generator;
 use function array_key_exists;
 use function array_merge;
+use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
 use function is_numeric;
@@ -34,7 +35,14 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
 {
     public static function versions(Event $composerEvent) : void
     {
-        $io               = $composerEvent->getIO();
+        $io = $composerEvent->getIO();
+
+        if (! file_exists(__DIR__)) {
+            $io->write('<info>malukenho/mcbumpface:</info> Package not found (probably scheduled for removal); package bumping skipped.');
+
+            return;
+        }
+
         $composer         = $composerEvent->getComposer();
         $locker           = $composer->getLocker();
         $rootPackage      = $composer->getPackage();
