@@ -242,4 +242,18 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
     {
         return trim($version, '^v') === trim($lockVersion, '^v');
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function deactivate(Composer $composer, IOInterface $io)
+    {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function uninstall(Composer $composer, IOInterface $io)
+    {
+    }
 }

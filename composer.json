@@ -11,12 +11,12 @@
     ],
     "require": {
         "php": "^7.2",
-        "composer-plugin-api": "^1.0.0"
+        "composer-plugin-api": "^1.0.0 || ^2.0.0"
     },
     "require-dev": {
         "ext-json": "*",
         "ext-zip": "*",
-        "composer/composer": "^1.9.3",
+        "composer/composer": "^1.9.3 || ^2.0@dev",
         "doctrine/coding-standard": "^8.1.0",
         "infection/infection": "^0.16.1",
         "phpunit/phpunit": "^9.1.4"
