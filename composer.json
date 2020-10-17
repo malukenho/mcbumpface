@@ -18,7 +18,7 @@
         "ext-zip": "*",
         "composer/composer": "^1.9.3 || ^2.0@dev",
         "doctrine/coding-standard": "^8.1.0",
-        "infection/infection": "^0.17.5",
+        "infection/infection": "^0.18",
         "phpunit/phpunit": "^9.1.4"
     },
     "config": {
