@@ -10,16 +10,16 @@
         }
     ],
     "require": {
-        "php": "^7.2",
+        "php": "^7.2 || ~8.0",
         "composer-plugin-api": "^1.0.0 || ^2.0.0"
     },
     "require-dev": {
         "ext-json": "*",
         "ext-zip": "*",
-        "composer/composer": "^1.9.3 || ^2.0@dev",
-        "doctrine/coding-standard": "^8.1.0",
-        "infection/infection": "^0.17.5",
-        "phpunit/phpunit": "^9.1.4"
+        "composer/composer": "^1.9.3 || ^2.0.2",
+        "doctrine/coding-standard": "^8.2.0",
+        "infection/infection": "^0.17.7",
+        "phpunit/phpunit": "^9.2.6"
     },
     "config": {
         "sort-packages": true

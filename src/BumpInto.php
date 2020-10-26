@@ -95,6 +95,10 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 continue;
             }
 
+            if (strpos($version, '|') !== false) {
+                continue;
+            }
+
             if (strpos($version, '~') === 0) {
                 continue;
             }
