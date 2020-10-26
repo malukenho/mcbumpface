@@ -19,6 +19,7 @@
         "composer/composer": "^1.9.3 || ^2.0.2",
         "doctrine/coding-standard": "^8.2.0",
         "infection/infection": "^0.17.7",
+        "staabm/annotate-pull-request-from-checkstyle": "^1.4.0",
         "phpunit/phpunit": "^9.2.6"
     },
     "config": {
