@@ -16,6 +16,7 @@ use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
 use Generator;
+
 use function array_key_exists;
 use function array_merge;
 use function file_exists;
@@ -29,11 +30,12 @@ use function sprintf;
 use function strpos;
 use function substr;
 use function trim;
+
 use const PATHINFO_EXTENSION;
 
 final class BumpInto implements PluginInterface, EventSubscriberInterface
 {
-    public static function versions(Event $composerEvent) : void
+    public static function versions(Event $composerEvent): void
     {
         $io = $composerEvent->getIO();
 
@@ -82,7 +84,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         array $requiredVersions,
         array $lockVersions,
         ComposerOptions $options
-    ) : void {
+    ): void {
         foreach ($requiredVersions as $package => $version) {
             if (! array_key_exists($package, $lockVersions)) {
                 continue;
@@ -143,7 +145,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         }
     }
 
-    private static function isLockedVersion(string $version) : bool
+    private static function isLockedVersion(string $version): bool
     {
         // Just by checking if the version is numeric
         // we guarantee that $version is a string
@@ -151,7 +153,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         return is_numeric($version);
     }
 
-    private static function updateLockContentHash(string $composerLockFile, string $contentHash) : void
+    private static function updateLockContentHash(string $composerLockFile, string $contentHash): void
     {
         $lockFile = new JsonFile($composerLockFile);
         $lockData = $lockFile->read();
@@ -172,7 +174,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
     /**
      * {@inheritDoc}
      */
-    public static function getSubscribedEvents() : array
+    public static function getSubscribedEvents(): array
     {
         return [
             ScriptEvents::POST_INSTALL_CMD => 'versions',
@@ -183,7 +185,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
     /**
      * @return Generator|string[]
      */
-    private static function getInstalledVersions(Locker $locker, RootPackageInterface $rootPackage) : Generator
+    private static function getInstalledVersions(Locker $locker, RootPackageInterface $rootPackage): Generator
     {
         $lockData                 = $locker->getLockData();
         $lockData['packages-dev'] = $lockData['packages-dev'] ?? [];
@@ -207,7 +209,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
     /**
      * @return Generator|string[]
      */
-    private static function getRequiredVersion(RootPackageInterface $rootPackage) : array
+    private static function getRequiredVersion(RootPackageInterface $rootPackage): array
     {
         return iterator_to_array(self::extractVersions($rootPackage->getRequires()));
     }
@@ -215,7 +217,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
     /**
      * @return Generator|string[]
      */
-    private static function getRequiredDevVersion(RootPackageInterface $rootPackage) : array
+    private static function getRequiredDevVersion(RootPackageInterface $rootPackage): array
     {
         return iterator_to_array(self::extractVersions($rootPackage->getDevRequires()));
     }
@@ -225,7 +227,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
      *
      * @return Generator|string[]
      */
-    private static function extractVersions(array $links) : Generator
+    private static function extractVersions(array $links): Generator
     {
         foreach ($links as $packageName => $required) {
             // should only consider packages with `/` separator
@@ -238,7 +240,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         }
     }
 
-    private static function isSimilar(string $version, string $lockVersion) : bool
+    private static function isSimilar(string $version, string $lockVersion): bool
     {
         return trim($version, '^v') === trim($lockVersion, '^v');
     }

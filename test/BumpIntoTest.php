@@ -11,6 +11,7 @@ use Composer\Script\Event;
 use Malukenho\McBumpface\BumpInto;
 use Malukenho\McBumpface\ComposerOptions;
 use PHPUnit\Framework\TestCase;
+
 use function file_get_contents;
 use function file_put_contents;
 use function json_decode;
@@ -29,7 +30,7 @@ final class BumpIntoTest extends TestCase
      * @test
      * @dataProvider providerVersions
      */
-    public function updateVersions(string $requiredPackage, string $requiredVersion, string $installedVersion, array $expected, array $options = []) : void
+    public function updateVersions(string $requiredPackage, string $requiredVersion, string $installedVersion, array $expected, array $options = []): void
     {
         $directory = sys_get_temp_dir() . '/' . uniqid('test-composer', false);
 
@@ -75,7 +76,7 @@ final class BumpIntoTest extends TestCase
     /**
      * @return string[][]|iterable
      */
-    public function providerVersions() : iterable
+    public function providerVersions(): iterable
     {
         yield '^1.0' => [
             'package' => 'malukenho/docheader',
@@ -194,7 +195,7 @@ final class BumpIntoTest extends TestCase
     /**
      * @param array<string,mixed> $options
      */
-    private function createComposerFile(string $requiredPackage, string $requiredVersion, array $options = []) : string
+    private function createComposerFile(string $requiredPackage, string $requiredVersion, array $options = []): string
     {
         if ($options === []) {
             return sprintf('{

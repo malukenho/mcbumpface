@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Malukenho\McBumpface;
 
 use Composer\Package\RootPackageInterface;
+
 use function preg_replace;
 
 final class ComposerOptions
@@ -22,14 +23,14 @@ final class ComposerOptions
         $this->stripVersionPrefixes = $stripVersionPrefixes;
     }
 
-    public static function fromRootPackage(RootPackageInterface $package) : self
+    public static function fromRootPackage(RootPackageInterface $package): self
     {
         $extra = $package->getExtra()[self::EXTRA_IDENTIFIER] ?? [];
 
         return new self($extra['stripVersionPrefixes'] ?? false);
     }
 
-    public function manipulateVersionIfNeeded(string $version) : string
+    public function manipulateVersionIfNeeded(string $version): string
     {
         if (! $this->stripVersionPrefixes) {
             return $version;
