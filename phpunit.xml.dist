@@ -1,23 +1,21 @@
 <?xml version="1.0"?>
-<phpunit
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-        bootstrap="./vendor/autoload.php"
-        colors="true"
-        verbose="true"
-        columns="max"
-        beStrictAboutCoversAnnotation="true"
-        beStrictAboutResourceUsageDuringSmallTests="true"
-        beStrictAboutChangesToGlobalState="true"
-        beStrictAboutOutputDuringTests="true"
-        beStrictAboutTodoAnnotatedTests="true"
->
-    <testsuite name="Malukenho\McBumpface tests">
-        <directory>./test</directory>
-    </testsuite>
-    <filter>
-        <whitelist>
-            <directory suffix=".php">./src</directory>
-        </whitelist>
-    </filter>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="./vendor/autoload.php"
+         colors="true"
+         verbose="true"
+         columns="max"
+         beStrictAboutCoversAnnotation="true"
+         beStrictAboutResourceUsageDuringSmallTests="true"
+         beStrictAboutChangesToGlobalState="true"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutTodoAnnotatedTests="true">
+  <coverage>
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+  </coverage>
+  <testsuite name="Malukenho\McBumpface tests">
+    <directory>./test</directory>
+  </testsuite>
 </phpunit>
