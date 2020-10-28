@@ -148,6 +148,13 @@ final class BumpIntoTest extends TestCase
             'expected' => ['malukenho/zend-framework' => 'dev-master@dev'],
         ];
 
+        yield '^2@dev' => [
+            'package' => 'ruflin/elastica',
+            'required_version' => '^2@dev',
+            'installed_version' => '2.x-dev',
+            'expected' => ['ruflin/elastica' => '^2@dev'],
+        ];
+
         yield '@dev' => [
             'package' => 'malukenho/zend-framework',
             'required_version' => '@dev',
