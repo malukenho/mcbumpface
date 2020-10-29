@@ -13,8 +13,10 @@ final class ComposerOptions
 
     /**
      * With this parameter, you can configure your project to either keep or drop the version `v` prefix from versions.
+     *
+     * @var bool
      */
-    private bool $stripVersionPrefixes;
+    private $stripVersionPrefixes;
 
     private function __construct(bool $stripVersionPrefixes)
     {
