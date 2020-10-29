@@ -14,6 +14,8 @@ final class ComposerOptions
     /**
      * With this parameter, you can configure your project to either keep or drop the version `v` prefix from versions.
      *
+     * phpcs:disable SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+     *
      * @var bool
      */
     private $stripVersionPrefixes;
