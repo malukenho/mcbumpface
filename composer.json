@@ -18,9 +18,9 @@
         "ext-zip": "*",
         "composer/composer": "^1.9.3 || ^2.0.2",
         "doctrine/coding-standard": "^8.2.0",
-        "infection/infection": "^0.20.0",
+        "infection/infection": "^0.20.2",
         "staabm/annotate-pull-request-from-checkstyle": "^1.4.0",
-        "phpunit/phpunit": "^9.4.2"
+        "phpunit/phpunit": "^9.4.4"
     },
     "config": {
         "sort-packages": true
