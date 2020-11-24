@@ -167,9 +167,6 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         $lockFile->write($lockData);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function activate(Composer $composer, IOInterface $io): void
     {
         // nope.
@@ -210,17 +207,13 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         yield $rootPackage->getName() => $rootPackage->getVersion();
     }
 
-    /**
-     * @return Generator|string[]
-     */
+    /** @return string[] */
     private static function getRequiredVersion(RootPackageInterface $rootPackage): array
     {
         return iterator_to_array(self::extractVersions($rootPackage->getRequires()));
     }
 
-    /**
-     * @return Generator|string[]
-     */
+    /** @return string[] */
     private static function getRequiredDevVersion(RootPackageInterface $rootPackage): array
     {
         return iterator_to_array(self::extractVersions($rootPackage->getDevRequires()));
@@ -249,16 +242,10 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         return trim($version, '^v') === trim($lockVersion, '^v');
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function deactivate(Composer $composer, IOInterface $io): void
     {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function uninstall(Composer $composer, IOInterface $io): void
     {
     }
