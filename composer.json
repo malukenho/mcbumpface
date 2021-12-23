@@ -1,16 +1,20 @@
 {
     "name": "malukenho/mcbumpface",
-    "description": "Bumping into packages",
+    "description": "Sync the composer.lock and composer.json versions, resulting in faster package resolutions.",
     "license": "MIT",
     "type": "composer-plugin",
     "authors": [
         {
             "name": "Jefersson Nathan",
             "email": "malukenho@phpse.net"
+        },
+        {
+            "name": "Gary Lockett",
+            "email": "gary@creativecow.uk"
         }
     ],
     "require": {
-        "php": "^7.4 || ~8.0.0 || ~8.1.0",
+        "php": "~8.0.0 || ~8.1.0",
         "composer-plugin-api": "^2.2.0"
     },
     "require-dev": {
@@ -41,10 +45,9 @@
         "sort-packages": true
     },
     "extra": {
-        "class": "Malukenho\\McBumpface\\BumpInto"
+        "class": "Malukenho\\McBumpface\\Composer\\BumpPlugin"
     },
     "scripts": {
-        "post-update-cmd": "Malukenho\\McBumpface\\BumpInto::versions",
         "cs-check": "phpcs",
         "cs-fix": "phpcbf",
         "review": [

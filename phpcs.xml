@@ -11,8 +11,8 @@
     <!-- Show progress -->
     <arg value="sp"/>
 
-    <!-- set minimal required PHP version (7.4) -->
-    <config name="php_version" value="70400"/>
+    <!-- set minimal required PHP version (8.0) -->
+    <config name="php_version" value="80000"/>
 
     <!-- Paths to check -->
     <file>src</file>

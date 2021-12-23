@@ -7,10 +7,11 @@ namespace MalukenhoTest\McBumpface;
 use Composer\Factory;
 use Composer\IO\IOInterface;
 use Composer\Package\Locker;
-use Composer\Script\Event;
-use Malukenho\McBumpface\BumpInto;
-use Malukenho\McBumpface\ComposerOptions;
+use Generator;
+use Malukenho\McBumpface\Bumper;
+use Malukenho\McBumpface\Options;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Input\InputInterface;
 
 use function file_get_contents;
 use function file_put_contents;
@@ -60,27 +61,30 @@ final class BumpIntoTest extends TestCase
             )
         );
 
-        $composerEvent = $this->createMock(Event::class);
-        $ioInterface   = $this->createMock(IOInterface::class);
-        $composer      = (new Factory())->createComposer(
+        $inputInterface = $this->createMock(InputInterface::class);
+        $inputInterface
+            ->expects(self::once())
+            ->method('getOptions')
+            ->willReturn([]);
+
+        $ioInterface = $this->createMock(IOInterface::class);
+        $composer    = (new Factory())->createComposer(
             $ioInterface,
             $directory . '/composer.json',
             false,
             $directory
         );
 
-        $composerEvent->expects(self::once())->method('getIO')->willReturn($ioInterface);
-
-        $composerEvent->expects(self::once())->method('getComposer')->willReturn($composer);
-
-        BumpInto::versions($composerEvent);
+        Bumper::versions($composer, $ioInterface, $inputInterface);
 
         $composerFinalContent     = file_get_contents($directory . '/composer.json');
         $composerLockFinalContent = file_get_contents($directory . '/composer.lock');
 
+        /** @var array<string, mixed> $lockContent */
+        $lockContent = json_decode($composerLockFinalContent, true);
         self::assertSame(
             Locker::getContentHash($composerFinalContent),
-            json_decode($composerLockFinalContent, true)['content-hash']
+            $lockContent['content-hash']
         );
         self::assertSame($expected, json_decode($composerFinalContent, true)['require'] ?? []);
     }
@@ -104,14 +108,20 @@ final class BumpIntoTest extends TestCase
 
         return json_encode([
             'require' => [$requiredPackage => $requiredVersion],
-            'extra'   => [ComposerOptions::EXTRA_IDENTIFIER => $options],
+            'extra'   => [Options::IDENTIFIER => $options],
         ]);
     }
 
     /**
-     * @return string[][]|iterable
+     * @return Generator<string, array{
+     *     package: string,
+     *     required_version: string,
+     *     installed_version: string,
+     *     expected: array<string, string>,
+     *     options?: array<string, mixed>
+     * }>
      */
-    public function providerVersions(): iterable
+    public function providerVersions(): Generator
     {
         yield '^1.0' => [
             'package'           => 'malukenho/docheader',
@@ -124,14 +134,14 @@ final class BumpIntoTest extends TestCase
             'package'           => 'malukenho/docheader',
             'required_version'  => '^1.0',
             'installed_version' => 'v1.0.1',
-            'expected'          => ['malukenho/docheader' => '^v1.0.1'],
+            'expected'          => ['malukenho/docheader' => '^1.0.1'],
         ];
 
         yield 'locked versions should not be marked for updated' => [
             'package'           => 'malukenho/docheader',
             'required_version'  => '1.0',
             'installed_version' => 'v1.0.0',
-            'expected'          => ['malukenho/docheader' => 'v1.0.0'],
+            'expected'          => ['malukenho/docheader' => '1.0.0'],
         ];
 
         yield '^1.3' => [
@@ -234,12 +244,12 @@ final class BumpIntoTest extends TestCase
             'expected'          => ['malukenho/zend-framework' => '^1.3.0, <1.4.0'],
         ];
 
-        yield 'version with leading "v" char but version prefixes are disabled via options' => [
+        yield 'version with leading "v" char but stripping prefixes is disabled via options' => [
             'package'           => 'malukenho/docheader',
             'required_version'  => '^1.0',
             'installed_version' => 'v1.0.1',
-            'expected'          => ['malukenho/docheader' => '^1.0.1'],
-            'options'           => ['stripVersionPrefixes' => true],
+            'expected'          => ['malukenho/docheader' => '^v1.0.1'],
+            'options'           => [Options::OPTION_STRIP_PREFIX => false],
         ];
     }
 }

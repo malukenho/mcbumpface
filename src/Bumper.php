@@ -5,17 +5,15 @@ declare(strict_types=1);
 namespace Malukenho\McBumpface;
 
 use Composer\Composer;
-use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Json\JsonFile;
 use Composer\Json\JsonManipulator;
 use Composer\Package\Link;
 use Composer\Package\Locker;
 use Composer\Package\RootPackageInterface;
-use Composer\Plugin\PluginInterface;
-use Composer\Script\Event;
-use Composer\Script\ScriptEvents;
+use Exception;
 use Generator;
+use Symfony\Component\Console\Input\InputInterface;
 
 use function array_key_exists;
 use function array_merge;
@@ -27,28 +25,37 @@ use function iterator_to_array;
 use function pathinfo;
 use function preg_match;
 use function sprintf;
-use function strpos;
+use function str_contains;
+use function str_starts_with;
 use function substr;
 use function trim;
 
 use const PATHINFO_EXTENSION;
 
-final class BumpInto implements PluginInterface, EventSubscriberInterface
+final class Bumper
 {
-    public static function versions(Event $composerEvent): void
+    private const TEMPLATE_GLOBAL    = '<info>malukenho/mcbumpface</info> %s';
+    private const TEMPLATE_NOT_FOUND = 'Package not found (probably scheduled for removal); package bumping skipped.';
+    //phpcs:disable Generic.Files.LineLength.TooLong
+    private const TEMPLATE_EXPANDING = 'is expanding <info>%s</info>%s package locked version from (<info>%s</info>) to (<info>%s</info>)';
+    private const TEMPLATE_UPDATING  = 'is updating <info>%s</info>%s package from version (<info>%s</info>) to (<info>%s</info>)';
+    //phpcs:enable Generic.Files.LineLength.TooLong
+
+    private static function writeMessage(IOInterface $io, string $message, string ...$args): void
     {
-        $io = $composerEvent->getIO();
+        $io->write(sprintf(self::TEMPLATE_GLOBAL, sprintf($message, ...$args)));
+    }
 
+    /**
+     * @throws Exception
+     */
+    public static function versions(Composer $composer, IOInterface $io, InputInterface $input): void
+    {
         if (! file_exists(__DIR__)) {
-            $io->write(
-            //phpcs:ignore Generic.Files.LineLength.TooLong
-                '<info>malukenho/mcbumpface:</info> Package not found (probably scheduled for removal); package bumping skipped.'
-            );
-
+            self::writeMessage($io, self::TEMPLATE_NOT_FOUND);
             return;
         }
 
-        $composer         = $composerEvent->getComposer();
         $locker           = $composer->getLocker();
         $rootPackage      = $composer->getPackage();
         $composerJsonFile = $composer->getConfig()->getConfigSource()->getName();
@@ -66,7 +73,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         $requiredVersions    = self::getRequiredVersion($rootPackage);
         $requiredDevVersions = self::getRequiredDevVersion($rootPackage);
 
-        $options = ComposerOptions::fromRootPackage($rootPackage);
+        $options = Options::fromRootPackage($rootPackage, $input);
         self::updateDependencies($io, $manipulator, 'require', $requiredVersions, $lockVersions, $options);
         self::updateDependencies($io, $manipulator, 'require-dev', $requiredDevVersions, $lockVersions, $options);
 
@@ -81,12 +88,16 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
     /**
      * @return Generator<string, string>
      */
-    private static function getInstalledVersions(Locker $locker, RootPackageInterface $rootPackage): Generator
+    private static function getInstalledVersions(?Locker $locker, RootPackageInterface $rootPackage): Generator
     {
+        if ($locker === null) {
+            return;
+        }
         $lockData                 = $locker->getLockData();
-        $lockData['packages-dev'] = $lockData['packages-dev'] ?? [];
+        $lockData['packages-dev'] = (array) ($lockData['packages-dev'] ?? []);
 
-        foreach (array_merge($lockData['packages'], $lockData['packages-dev']) as $package) {
+        /** @var array<string, string> $package */
+        foreach (array_merge((array) $lockData['packages'], $lockData['packages-dev']) as $package) {
             yield $package['name'] => $package['version'];
         }
 
@@ -103,7 +114,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * @return string[]
+     * @return array<string, string>
      */
     private static function getRequiredVersion(RootPackageInterface $rootPackage): array
     {
@@ -111,7 +122,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * @param Link[] $links
+     * @param array<string, Link> $links
      * @return Generator<string, string>
      */
     private static function extractVersions(array $links): Generator
@@ -119,7 +130,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         foreach ($links as $packageName => $required) {
             // should only consider packages with `/` separator
             // that means that we ignore "php" or "ext-*"
-            if (strpos($packageName, '/') === false) {
+            if (! str_contains($packageName, '/')) {
                 continue;
             }
 
@@ -128,7 +139,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * @return string[]
+     * @return array<string, string>
      */
     private static function getRequiredDevVersion(RootPackageInterface $rootPackage): array
     {
@@ -136,8 +147,8 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * @param string[] $requiredVersions
-     * @param string[] $lockVersions
+     * @param array<string, string> $requiredVersions
+     * @param array<string, string> $lockVersions
      */
     private static function updateDependencies(
         IOInterface $io,
@@ -145,58 +156,37 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         string $configKey,
         array $requiredVersions,
         array $lockVersions,
-        ComposerOptions $options
+        Options $options
     ): void {
         foreach ($requiredVersions as $package => $version) {
-            if (! array_key_exists($package, $lockVersions)) {
-                continue;
-            }
-
             // Skip complex ranges for now
-            if (strpos($version, ',') !== false) {
-                continue;
-            }
-
-            if (strpos($version, '|') !== false) {
-                continue;
-            }
-
-            if (strpos($version, '~') === 0) {
-                continue;
-            }
-
-            if (strpos($version, ' as ') !== false) {
-                continue;
-            }
-
-            if (preg_match('~^dev-.+@dev$|@dev~', $version) === 1) {
+            if (
+                ! array_key_exists($package, $lockVersions)
+                || str_contains($version, ',')
+                || str_contains($version, '|')
+                || str_starts_with($version, '~')
+                || str_contains($version, ' as ')
+                || preg_match('~^dev-.+@dev$|@dev~', $version) === 1
+            ) {
                 continue;
             }
 
             $lockVersion = $lockVersions[$package];
-
-            if (self::isSimilar($version, $lockVersion)) {
-                continue;
-            }
-
-            if ($lockVersion === 'dev-master') {
+            if (self::isSimilar($version, $lockVersion) || str_starts_with($lockVersion, 'dev')) {
                 continue;
             }
 
             $lockVersion = $options->manipulateVersionIfNeeded($lockVersion);
-
             if (self::isLockedVersion($version)) {
                 $manipulator->addLink($configKey, $package, $lockVersion, false);
 
-                $io->write(
-                    sprintf(
-                    //phpcs:ignore Generic.Files.LineLength.TooLong
-                        '<info>malukenho/mcbumpface</info> is expanding <info>%s</info>%s package locked version from (<info>%s</info>) to (<info>%s</info>)',
-                        $package,
-                        $configKey === 'require-dev' ? ' dev' : '',
-                        $version,
-                        $lockVersion
-                    )
+                self::writeMessage(
+                    $io,
+                    self::TEMPLATE_EXPANDING,
+                    $package,
+                    $configKey === 'require-dev' ? ' dev' : '',
+                    $version,
+                    $lockVersion
                 );
 
                 continue;
@@ -204,16 +194,13 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
 
             $manipulator->addLink($configKey, $package, '^' . $lockVersion, false);
 
-            $io->write(
-                sprintf(
-
-                //phpcs:ignore Generic.Files.LineLength.TooLong
-                    '<info>malukenho/mcbumpface</info> is updating <info>%s</info>%s package from version (<info>%s</info>) to (<info>%s</info>)',
-                    $package,
-                    $configKey === 'require-dev' ? ' dev' : '',
-                    $version,
-                    '^' . $lockVersion
-                )
+            self::writeMessage(
+                $io,
+                self::TEMPLATE_UPDATING,
+                $package,
+                $configKey === 'require-dev' ? ' dev' : '',
+                $version,
+                '^' . $lockVersion
             );
         }
     }
@@ -231,37 +218,17 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         return is_numeric($version);
     }
 
+    /**
+     * @throws Exception
+     */
     private static function updateLockContentHash(string $composerLockFile, string $contentHash): void
     {
         $lockFile = new JsonFile($composerLockFile);
+        /** @var array<string, mixed> $lockData */
         $lockData = $lockFile->read();
 
         $lockData['content-hash'] = $contentHash;
 
         $lockFile->write($lockData);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            ScriptEvents::POST_INSTALL_CMD => 'versions',
-            ScriptEvents::POST_UPDATE_CMD  => 'versions',
-        ];
-    }
-
-    public function activate(Composer $composer, IOInterface $io): void
-    {
-        // nope.
-    }
-
-    public function deactivate(Composer $composer, IOInterface $io): void
-    {
-    }
-
-    public function uninstall(Composer $composer, IOInterface $io): void
-    {
     }
 }
