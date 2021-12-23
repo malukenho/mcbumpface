@@ -22,7 +22,7 @@ composer global require malukenho/mcbumpface
 ### Usage
 
 ```
-composer mcbumpface [--stripVersionPrefix]
+composer mcbumpface [--stripVersionPrefix=false]
 ```
 
 #### How it works?

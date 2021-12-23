@@ -27,7 +27,7 @@ final class BumpCommand extends BaseCommand
         $this->addOption(
             Options::OPTION_STRIP_PREFIX,
             's',
-            InputOption::VALUE_NONE,
+            InputOption::VALUE_REQUIRED,
             'Strip "v" prefix from versions (e.g. "^v1.3.0" becomes "^1.3.0").'
         );
     }

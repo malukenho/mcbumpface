@@ -62,13 +62,8 @@ final class BumpIntoTest extends TestCase
         );
 
         $inputInterface = $this->createMock(InputInterface::class);
-        $inputInterface
-            ->expects(self::once())
-            ->method('getOptions')
-            ->willReturn([]);
-
-        $ioInterface = $this->createMock(IOInterface::class);
-        $composer    = (new Factory())->createComposer(
+        $ioInterface    = $this->createMock(IOInterface::class);
+        $composer       = (new Factory())->createComposer(
             $ioInterface,
             $directory . '/composer.json',
             false,
