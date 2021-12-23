@@ -35,6 +35,7 @@ use const PATHINFO_EXTENSION;
 final class Bumper
 {
     private const TEMPLATE_GLOBAL    = '<info>malukenho/mcbumpface</info> %s';
+    private const TEMPLATE_FINISHED  = 'Done. All packages are fixed to their locked versions.';
     private const TEMPLATE_NOT_FOUND = 'Package not found (probably scheduled for removal); package bumping skipped.';
     //phpcs:disable Generic.Files.LineLength.TooLong
     private const TEMPLATE_EXPANDING = 'is expanding <info>%s</info>%s package locked version from (<info>%s</info>) to (<info>%s</info>)';
@@ -83,6 +84,7 @@ final class Bumper
         file_put_contents($composerJsonFile, $contents);
 
         self::updateLockContentHash($composerLockFile, $contentHash);
+        self::writeMessage($io, self::TEMPLATE_FINISHED);
     }
 
     /**
