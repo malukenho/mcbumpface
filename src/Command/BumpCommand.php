@@ -36,10 +36,10 @@ final class BumpCommand extends BaseCommand
     {
         $composer = $this->getComposer();
         if ($composer === null) {
-            return self::FAILURE;
+            return 1;
         }
 
         Bumper::versions($composer, $this->getIO(), $input);
-        return self::SUCCESS;
+        return 0;
     }
 }
