@@ -15,7 +15,7 @@
     ],
     "require": {
         "php": "~8.0.0 || ~8.1.0",
-        "composer-plugin-api": "^2.2.0"
+        "composer-plugin-api": "^2.0.0"
     },
     "require-dev": {
         "ext-json": "*",
@@ -26,6 +26,9 @@
         "phpunit/phpunit": "^9.5.10",
         "psalm/plugin-phpunit": "^0.15.2",
         "vimeo/psalm": "^v4.15.0"
+    },
+    "conflict": {
+        "symfony/process": "<4.4.30"
     },
     "autoload": {
         "psr-4": {
