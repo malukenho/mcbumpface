@@ -1,8 +1,8 @@
 {
     "name": "malukenho/mcbumpface",
     "description": "Bumping into packages",
-    "type": "composer-plugin",
     "license": "MIT",
+    "type": "composer-plugin",
     "authors": [
         {
             "name": "Jefersson Nathan",
@@ -17,17 +17,11 @@
         "ext-json": "*",
         "ext-zip": "*",
         "composer/composer": "^2.2.1",
-        "doctrine/coding-standard": "^9.0.0",
-        "infection/infection": "^0.25.5",
-        "staabm/annotate-pull-request-from-checkstyle": "^1.7.1",
-        "phpunit/phpunit": "^9.5.10"
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "infection/extension-installer": true
-        }
+        "laminas/laminas-coding-standard": "^2.3.0",
+        "phpspec/prophecy-phpunit": "^2.0.1",
+        "phpunit/phpunit": "^9.5.10",
+        "psalm/plugin-phpunit": "^0.15.2",
+        "vimeo/psalm": "^v4.15.0"
     },
     "autoload": {
         "psr-4": {
@@ -39,10 +33,27 @@
             "MalukenhoTest\\McBumpface\\": "test/"
         }
     },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "sort-packages": true
+    },
     "extra": {
         "class": "Malukenho\\McBumpface\\BumpInto"
     },
     "scripts": {
-        "post-update-cmd": "Malukenho\\McBumpface\\BumpInto::versions"
+        "post-update-cmd": "Malukenho\\McBumpface\\BumpInto::versions",
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
+        "review": [
+            "@cs-check",
+            "@static-analysis",
+            "@test"
+        ],
+        "static-analysis": "psalm --shepherd --stats",
+        "test": "phpunit --colors=always",
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
     }
 }

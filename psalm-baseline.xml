@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="v4.15.0@a1b5e489e6fcebe40cb804793d964e99fc347820">
+  <file src="src/BumpInto.php">
+    <MismatchingDocblockReturnType occurrences="2">
+      <code>Generator|string[]</code>
+      <code>Generator|string[]</code>
+    </MismatchingDocblockReturnType>
+    <MixedArgument occurrences="1">
+      <code>$lockData</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion occurrences="4">
+      <code>$lockVersions</code>
+      <code>$lockVersions</code>
+      <code>$package</code>
+      <code>$package</code>
+    </MixedArgumentTypeCoercion>
+    <MixedArrayAssignment occurrences="1">
+      <code>$lockData['content-hash']</code>
+    </MixedArrayAssignment>
+    <MixedAssignment occurrences="1">
+      <code>$lockData</code>
+    </MixedAssignment>
+    <MixedReturnTypeCoercion occurrences="4">
+      <code>iterator_to_array(self::extractVersions($rootPackage-&gt;getDevRequires()))</code>
+      <code>iterator_to_array(self::extractVersions($rootPackage-&gt;getRequires()))</code>
+      <code>string[]</code>
+      <code>string[]</code>
+    </MixedReturnTypeCoercion>
+    <PossiblyInvalidArgument occurrences="3">
+      <code>self::extractVersions($rootPackage-&gt;getDevRequires())</code>
+      <code>self::extractVersions($rootPackage-&gt;getRequires())</code>
+      <code>self::getInstalledVersions($locker, $rootPackage)</code>
+    </PossiblyInvalidArgument>
+    <PossiblyNullArgument occurrences="1">
+      <code>$locker</code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="src/ComposerOptions.php">
+    <MixedArgument occurrences="1">
+      <code>$extra['stripVersionPrefixes'] ?? false</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="1">
+      <code>$extra['stripVersionPrefixes']</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="1">
+      <code>$extra</code>
+    </MixedAssignment>
+  </file>
+  <file src="test/BumpIntoTest.php">
+    <MixedArrayAccess occurrences="1">
+      <code>json_decode($composerLockFinalContent, true)['content-hash']</code>
+    </MixedArrayAccess>
+    <MixedInferredReturnType occurrences="1">
+      <code>string[][]|iterable</code>
+    </MixedInferredReturnType>
+  </file>
+</files>
