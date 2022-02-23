@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="./vendor/squizlabs/php_codesniffer/phpcs.xsd">
+
+    <arg name="basepath" value="."/>
+    <arg name="cache" value=".phpcs-cache"/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="80"/>
+
+    <!-- Show progress -->
+    <arg value="sp"/>
+
+    <!-- set minimal required PHP version (8.0) -->
+    <config name="php_version" value="80000"/>
+
+    <!-- Paths to check -->
+    <file>src</file>
+    <file>test</file>
+
+    <!-- Include all rules from Laminas Coding Standard -->
+    <rule ref="LaminasCodingStandard">
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint"/>
+    </rule>
+</ruleset>

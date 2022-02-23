@@ -1,33 +1,34 @@
 {
     "name": "malukenho/mcbumpface",
-    "description": "Bumping into packages",
-    "type": "composer-plugin",
+    "description": "Sync the composer.lock and composer.json versions, resulting in faster package resolutions.",
     "license": "MIT",
+    "type": "composer-plugin",
     "authors": [
         {
             "name": "Jefersson Nathan",
             "email": "malukenho@phpse.net"
+        },
+        {
+            "name": "Gary Lockett",
+            "email": "gary@creativecow.uk"
         }
     ],
     "require": {
-        "php": "^7.2 || ~8.0",
-        "composer-plugin-api": "^1.0.0 || ^2.0.0"
+        "php": "~8.0.0 || ~8.1.0",
+        "composer-plugin-api": "^2.0.0"
     },
     "require-dev": {
         "ext-json": "*",
         "ext-zip": "*",
-        "composer/composer": "^1.9.3 || ^2.0.2",
-        "doctrine/coding-standard": "^9.0.0",
-        "infection/infection": "^0.26.13",
-        "staabm/annotate-pull-request-from-checkstyle": "^1.8.3",
-        "phpunit/phpunit": "^9.5.21"
+        "composer/composer": "^2.2.1",
+        "laminas/laminas-coding-standard": "^2.3.0",
+        "phpspec/prophecy-phpunit": "^2.0.1",
+        "phpunit/phpunit": "^9.5.21",
+        "psalm/plugin-phpunit": "^0.15.2",
+        "vimeo/psalm": "^v4.15.0"
     },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "infection/extension-installer": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
-        }
+    "conflict": {
+        "symfony/process": "<4.4.30"
     },
     "autoload": {
         "psr-4": {
@@ -39,10 +40,27 @@
             "MalukenhoTest\\McBumpface\\": "test/"
         }
     },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "infection/extension-installer": true
+        },
+        "sort-packages": true
+    },
     "extra": {
-        "class": "Malukenho\\McBumpface\\BumpInto"
+        "class": "Malukenho\\McBumpface\\Composer\\BumpPlugin"
     },
     "scripts": {
-        "post-update-cmd": "Malukenho\\McBumpface\\BumpInto::versions"
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
+        "review": [
+            "@cs-check",
+            "@static-analysis",
+            "@test"
+        ],
+        "static-analysis": "psalm --shepherd --stats",
+        "test": "phpunit --colors=always",
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
     }
 }
