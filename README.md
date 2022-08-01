@@ -50,7 +50,8 @@ The configuration can be added like this:
 {
     "extra": {
         "mc-bumpface": {
-            "stripVersionPrefixes": false
+            "stripVersionPrefixes": false,
+            "keepVersionConstraintPrefix": false
         }
     }
 }
@@ -59,7 +60,14 @@ The configuration can be added like this:
 The following configurations are available:
 
 - [stripVersionPrefixes](#configuration-stripVersionPrefixes)
+- [keepVersionConstraintPrefix](#configuration-keepVersionConstraintPrefix)
 
 ###### stripVersionPrefixes (default: false)
 <a name="configuration-stripVersionPrefixes"></a> 
 By setting this parameter to `true`, `mcbumpface` will strip the `v` prefix from versions (in case they are tagged like this).  
+
+###### keepVersionConstraintPrefix (default: false)
+<a name="configuration-keepVersionConstraintPrefix"></a>
+By setting this parameter to `true`, `mcbumpface` will NOT replace the version constraint prefix.
+
+Having a required version `~2.0` and installed `2.0.20` will replace the version constraint to `^2.0.20`.

@@ -180,14 +180,15 @@ final class BumpIntoTest extends TestCase
             'package' => 'malukenho/zend-framework',
             'required_version' => '~2.0.20',
             'installed_version' => '2.0.30',
-            'expected' => ['malukenho/zend-framework' => '~2.0.20'],
+            'expected' => ['malukenho/zend-framework' => '~2.0.30'],
+            'options' => ['keepVersionConstraintPrefix' => true],
         ];
 
         yield '~1.2' => [
             'package' => 'malukenho/zend-framework',
             'required_version' => '~1.2',
             'installed_version' => '1.2.3',
-            'expected' => ['malukenho/zend-framework' => '~1.2'],
+            'expected' => ['malukenho/zend-framework' => '^1.2.3'],
         ];
 
         yield '^1.3.0, <1.4.0' => [
@@ -203,6 +204,14 @@ final class BumpIntoTest extends TestCase
             'installed_version' => 'v1.0.1',
             'expected' => ['malukenho/docheader' => '^1.0.1'],
             'options' => ['stripVersionPrefixes' => true],
+        ];
+
+        yield 'constraint prefix ~ should be replaced when disabled' => [
+            'package' => 'malukenho/docheader',
+            'required_version' => '~2.0',
+            'installed_version' => '2.0.30',
+            'expected' => ['malukenho/docheader' => '^2.0.30'],
+            'options' => ['keepVersionConstraintPrefix' => false],
         ];
     }
 
