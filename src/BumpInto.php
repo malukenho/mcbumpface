@@ -86,6 +86,8 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         ComposerOptions $options
     ): void {
         foreach ($requiredVersions as $package => $version) {
+            $constraintPrefix = '^';
+
             if (! array_key_exists($package, $lockVersions)) {
                 continue;
             }
@@ -99,8 +101,8 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 continue;
             }
 
-            if (strpos($version, '~') === 0) {
-                continue;
+            if (strpos($version, '~') === 0 && $options->shouldKeepVersionConstraintPrefix()) {
+                $constraintPrefix = '~';
             }
 
             if (strpos($version, ' as ') !== false) {
@@ -137,7 +139,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 continue;
             }
 
-            $manipulator->addLink($configKey, $package, '^' . $lockVersion, false);
+            $manipulator->addLink($configKey, $package, $constraintPrefix . $lockVersion, false);
 
             $IO->write(sprintf(
                 '<info>malukenho/mcbumpface</info> is updating <info>%s</info>%s package from version (<info>%s</info>) to (<info>%s</info>)',

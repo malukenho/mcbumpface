@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Malukenho\McBumpface;
@@ -20,16 +21,33 @@ final class ComposerOptions
      */
     private $stripVersionPrefixes;
 
-    private function __construct(bool $stripVersionPrefixes)
+    /**
+     * With this parameter, you can configurate if the version constraint in your composer.json will be kept or
+     * to be replaced with `^`
+     *
+     * E.g.: `~2.1` will be replaced with `^2.1`
+     * Setting this option to true will keep `~2.1`
+     *
+     * phpcs:disable SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+     *
+     * @var bool
+     */
+    private $keepVersionConstraintPrefix;
+
+    private function __construct(bool $stripVersionPrefixes, bool $keepVersionConstraintPrefix)
     {
-        $this->stripVersionPrefixes = $stripVersionPrefixes;
+        $this->stripVersionPrefixes        = $stripVersionPrefixes;
+        $this->keepVersionConstraintPrefix = $keepVersionConstraintPrefix;
     }
 
     public static function fromRootPackage(RootPackageInterface $package): self
     {
         $extra = $package->getExtra()[self::EXTRA_IDENTIFIER] ?? [];
 
-        return new self($extra['stripVersionPrefixes'] ?? false);
+        return new self(
+            $extra['stripVersionPrefixes'] ?? false,
+            $extra['keepVersionConstraintPrefix'] ?? false
+        );
     }
 
     public function manipulateVersionIfNeeded(string $version): string
@@ -39,5 +57,10 @@ final class ComposerOptions
         }
 
         return (string) preg_replace('/^v(?<version>.*)/', '\1', $version);
+    }
+
+    public function shouldKeepVersionConstraintPrefix(): bool
+    {
+        return $this->keepVersionConstraintPrefix;
     }
 }
