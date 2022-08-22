@@ -20,7 +20,7 @@ final class Options
     public const OPTION_KEEP_VERSION_CONSTRAINT_PREFIX = 'keepVersionConstraintPrefix';
     public const DEFAULT_OPTIONS                       = [
         self::OPTION_STRIP_PREFIX                   => true,
-        self::OPTION_KEEP_VERSION_CONSTRAINT_PREFIX => false,
+        self::OPTION_KEEP_VERSION_CONSTRAINT_PREFIX => true,
     ];
 
     private function __construct(private bool $stripVersionPrefix, private bool $keepVersionConstraintPrefix)
@@ -40,6 +40,15 @@ final class Options
         $stripVersionPrefix = $input->getOption(self::OPTION_STRIP_PREFIX);
         if ($stripVersionPrefix !== null) {
             $options[self::OPTION_STRIP_PREFIX] = filter_var($stripVersionPrefix, FILTER_VALIDATE_BOOLEAN);
+        }
+
+        /** @var string|null $keepVersionConstraintPrefix */
+        $keepVersionConstraintPrefix = $input->getOption(self::OPTION_KEEP_VERSION_CONSTRAINT_PREFIX);
+        if ($keepVersionConstraintPrefix !== null) {
+            $options[self::OPTION_KEEP_VERSION_CONSTRAINT_PREFIX] = filter_var(
+                $keepVersionConstraintPrefix,
+                FILTER_VALIDATE_BOOLEAN
+            );
         }
 
         return new self(

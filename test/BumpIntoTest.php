@@ -223,14 +223,6 @@ final class BumpIntoTest extends TestCase
             'required_version'  => '~2.0.20',
             'installed_version' => '2.0.30',
             'expected'          => ['malukenho/zend-framework' => '~2.0.30'],
-            'options'           => [Options::OPTION_KEEP_VERSION_CONSTRAINT_PREFIX => true],
-        ];
-
-        yield '~1.2' => [
-            'package'           => 'malukenho/zend-framework',
-            'required_version'  => '~1.2',
-            'installed_version' => '1.2.3',
-            'expected'          => ['malukenho/zend-framework' => '^1.2.3'],
         ];
 
         yield '^1.3.0, <1.4.0' => [
