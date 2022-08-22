@@ -34,12 +34,9 @@ final class BumpCommand extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $composer = $this->getComposer();
-        if ($composer === null) {
-            return 1;
-        }
+        $composer = $this->requireComposer();
 
         Bumper::versions($composer, $this->getIO(), $input);
-        return 0;
+        return self::SUCCESS;
     }
 }

@@ -3,7 +3,9 @@
 /.psalm-cache
 /clover.xml
 /docs/html/
+/infection-log.txt
 /laminas-mkdoc-theme.tgz
 /laminas-mkdoc-theme/
 /phpunit.xml
+/psalm.xml
 /vendor/

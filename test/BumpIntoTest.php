@@ -240,6 +240,13 @@ final class BumpIntoTest extends TestCase
             'expected'          => ['malukenho/zend-framework' => '^1.3.0, <1.4.0'],
         ];
 
+        yield 'version with leading "v" char but stripping prefixes is default' => [
+            'package'           => 'malukenho/docheader',
+            'required_version'  => '^1.0',
+            'installed_version' => 'v1.0.1',
+            'expected'          => ['malukenho/docheader' => '^1.0.1'],
+        ];
+
         yield 'version with leading "v" char but stripping prefixes is disabled via options' => [
             'package'           => 'malukenho/docheader',
             'required_version'  => '^1.0',
