@@ -22,7 +22,7 @@ use function sprintf;
 use function sys_get_temp_dir;
 use function uniqid;
 
-final class BumpIntoTest extends TestCase
+final class BumperTest extends TestCase
 {
     /**
      * @param string[] $expected expected end structure
