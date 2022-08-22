@@ -35,7 +35,8 @@ final class BumperTest extends TestCase
         string $requiredVersion,
         string $installedVersion,
         array $expected,
-        array $options = []
+        bool $constraintIsModified = false,
+        array $options = [],
     ): void {
         $directory = sys_get_temp_dir() . '/' . uniqid('test-composer', false);
 
@@ -69,6 +70,10 @@ final class BumperTest extends TestCase
             false,
             $directory
         );
+
+        $ioInterface
+            ->expects(self::exactly($constraintIsModified ? 2 : 1))
+            ->method('write');
 
         Bumper::versions($composer, $ioInterface, $inputInterface);
 
@@ -113,37 +118,42 @@ final class BumperTest extends TestCase
      *     required_version: string,
      *     installed_version: string,
      *     expected: array<string, string>,
-     *     options?: array<string, mixed>
+     *     constraintIsModified?: bool,
+     *     options?: array<string, mixed>,
      * }>
      */
     public function providerVersions(): Generator
     {
         yield '^1.0' => [
-            'package'           => 'malukenho/docheader',
-            'required_version'  => '^1.0',
-            'installed_version' => '1.0.0',
-            'expected'          => ['malukenho/docheader' => '^1.0.0'],
+            'package'              => 'malukenho/docheader',
+            'required_version'     => '^1.0',
+            'installed_version'    => '1.0.0',
+            'expected'             => ['malukenho/docheader' => '^1.0.0'],
+            'constraintIsModified' => true,
         ];
 
         yield 'version with leading "v" char' => [
-            'package'           => 'malukenho/docheader',
-            'required_version'  => '^1.0',
-            'installed_version' => 'v1.0.1',
-            'expected'          => ['malukenho/docheader' => '^1.0.1'],
+            'package'              => 'malukenho/docheader',
+            'required_version'     => '^1.0',
+            'installed_version'    => 'v1.0.1',
+            'expected'             => ['malukenho/docheader' => '^1.0.1'],
+            'constraintIsModified' => true,
         ];
 
         yield 'locked versions should not be marked for updated' => [
-            'package'           => 'malukenho/docheader',
-            'required_version'  => '1.0',
-            'installed_version' => 'v1.0.0',
-            'expected'          => ['malukenho/docheader' => '1.0.0'],
+            'package'              => 'malukenho/docheader',
+            'required_version'     => '1.0',
+            'installed_version'    => 'v1.0.0',
+            'expected'             => ['malukenho/docheader' => '1.0.0'],
+            'constraintIsModified' => true,
         ];
 
         yield '^1.3' => [
-            'package'           => 'malukenho/docheader',
-            'required_version'  => '^1.3',
-            'installed_version' => '1.9.6',
-            'expected'          => ['malukenho/docheader' => '^1.9.6'],
+            'package'              => 'malukenho/docheader',
+            'required_version'     => '^1.3',
+            'installed_version'    => '1.9.6',
+            'expected'             => ['malukenho/docheader' => '^1.9.6'],
+            'constraintIsModified' => true,
         ];
 
         yield 'dev-master-bits' => [
@@ -219,8 +229,16 @@ final class BumperTest extends TestCase
         ];
 
         yield '~2.0.23' => [
+            'package'              => 'malukenho/zend-framework',
+            'required_version'     => '~2.0.20',
+            'installed_version'    => '2.0.30',
+            'expected'             => ['malukenho/zend-framework' => '~2.0.30'],
+            'constraintIsModified' => true,
+        ];
+
+        yield '~2.0.30' => [
             'package'           => 'malukenho/zend-framework',
-            'required_version'  => '~2.0.20',
+            'required_version'  => '~2.0.30',
             'installed_version' => '2.0.30',
             'expected'          => ['malukenho/zend-framework' => '~2.0.30'],
         ];
@@ -232,27 +250,37 @@ final class BumperTest extends TestCase
             'expected'          => ['malukenho/zend-framework' => '^1.3.0, <1.4.0'],
         ];
 
-        yield 'version with leading "v" char but stripping prefixes is default' => [
+        yield 'new version with leading "v" char but stripping prefixes is default' => [
+            'package'              => 'malukenho/docheader',
+            'required_version'     => '^1.0',
+            'installed_version'    => 'v1.0.1',
+            'expected'             => ['malukenho/docheader' => '^1.0.1'],
+            'constraintIsModified' => true,
+        ];
+
+        yield 'matching version with leading "v" char but stripping prefixes is default' => [
             'package'           => 'malukenho/docheader',
-            'required_version'  => '^1.0',
+            'required_version'  => '^1.0.1',
             'installed_version' => 'v1.0.1',
             'expected'          => ['malukenho/docheader' => '^1.0.1'],
         ];
 
         yield 'version with leading "v" char but stripping prefixes is disabled via options' => [
-            'package'           => 'malukenho/docheader',
-            'required_version'  => '^1.0',
-            'installed_version' => 'v1.0.1',
-            'expected'          => ['malukenho/docheader' => '^v1.0.1'],
-            'options'           => [Options::OPTION_STRIP_PREFIX => false],
+            'package'              => 'malukenho/docheader',
+            'required_version'     => '^1.0',
+            'installed_version'    => 'v1.0.1',
+            'expected'             => ['malukenho/docheader' => '^v1.0.1'],
+            'constraintIsModified' => true,
+            'options'              => [Options::OPTION_STRIP_PREFIX => false],
         ];
 
         yield 'constraint prefix ~ should be replaced when disabled' => [
-            'package'           => 'malukenho/docheader',
-            'required_version'  => '~2.0',
-            'installed_version' => '2.0.30',
-            'expected'          => ['malukenho/docheader' => '^2.0.30'],
-            'options'           => [Options::OPTION_KEEP_VERSION_CONSTRAINT_PREFIX => false],
+            'package'              => 'malukenho/docheader',
+            'required_version'     => '~2.0',
+            'installed_version'    => '2.0.30',
+            'expected'             => ['malukenho/docheader' => '^2.0.30'],
+            'constraintIsModified' => true,
+            'options'              => [Options::OPTION_KEEP_VERSION_CONSTRAINT_PREFIX => false],
         ];
     }
 }

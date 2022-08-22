@@ -207,14 +207,14 @@ final class Bumper
                 $package,
                 $configKey === 'require-dev' ? ' dev' : '',
                 $version,
-                '^' . $lockVersion
+                $constraintPrefix . $lockVersion
             );
         }
     }
 
     private static function isSimilar(string $version, string $lockVersion): bool
     {
-        return trim($version, '^v') === trim($lockVersion, '^v');
+        return trim($version, '~^v') === trim($lockVersion, '~^v');
     }
 
     private static function isLockedVersion(string $version): bool
