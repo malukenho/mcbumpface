@@ -83,7 +83,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         string $configKey,
         array $requiredVersions,
         array $lockVersions,
-        ComposerOptions $options
+        ComposerOptions $options,
     ): void {
         foreach ($requiredVersions as $package => $version) {
             $constraintPrefix = '^';
@@ -133,7 +133,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                     $package,
                     $configKey === 'require-dev' ? ' dev' : '',
                     $version,
-                    $lockVersion
+                    $lockVersion,
                 ));
 
                 continue;
@@ -146,7 +146,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 $package,
                 $configKey === 'require-dev' ? ' dev' : '',
                 $version,
-                '^' . $lockVersion
+                '^' . $lockVersion,
             ));
         }
     }
@@ -185,9 +185,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
         ];
     }
 
-    /**
-     * @return Generator|string[]
-     */
+    /** @return Generator|string[] */
     private static function getInstalledVersions(Locker $locker, RootPackageInterface $rootPackage): Generator
     {
         $lockData                 = $locker->getLockData();

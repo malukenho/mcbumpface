@@ -68,14 +68,12 @@ final class BumpIntoTest extends TestCase
 
         self::assertSame(
             Locker::getContentHash($composerFinalContent),
-            json_decode($composerLockFinalContent, true)['content-hash']
+            json_decode($composerLockFinalContent, true)['content-hash'],
         );
         self::assertSame($expected, json_decode($composerFinalContent, true)['require'] ?? []);
     }
 
-    /**
-     * @return string[][]|iterable
-     */
+    /** @return string[][]|iterable */
     public function providerVersions(): iterable
     {
         yield '^1.0' => [
@@ -215,9 +213,7 @@ final class BumpIntoTest extends TestCase
         ];
     }
 
-    /**
-     * @param array<string,mixed> $options
-     */
+    /** @param array<string,mixed> $options */
     private function createComposerFile(string $requiredPackage, string $requiredVersion, array $options = []): string
     {
         if ($options === []) {

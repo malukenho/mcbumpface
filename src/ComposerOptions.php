@@ -46,7 +46,7 @@ final class ComposerOptions
 
         return new self(
             $extra['stripVersionPrefixes'] ?? false,
-            $extra['keepVersionConstraintPrefix'] ?? false
+            $extra['keepVersionConstraintPrefix'] ?? false,
         );
     }
 
