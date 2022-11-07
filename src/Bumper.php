@@ -27,7 +27,6 @@ use function preg_match;
 use function sprintf;
 use function str_contains;
 use function str_starts_with;
-use function strpos;
 use function substr;
 use function trim;
 
@@ -175,7 +174,7 @@ final class Bumper
                 continue;
             }
 
-            if (strpos($version, '~') === 0 && $options->shouldKeepVersionConstraintPrefix()) {
+            if (str_starts_with($version, '~') && $options->shouldKeepVersionConstraintPrefix()) {
                 $constraintPrefix = '~';
             }
 
@@ -186,7 +185,7 @@ final class Bumper
 
             $lockVersion = $options->manipulateVersionIfNeeded($lockVersion);
             if (self::isLockedVersion($version)) {
-                $manipulator->addLink($configKey, $package, $lockVersion, false);
+                $manipulator->addLink($configKey, $package, $lockVersion);
 
                 self::writeMessage(
                     $io,
@@ -200,7 +199,7 @@ final class Bumper
                 continue;
             }
 
-            $manipulator->addLink($configKey, $package, $constraintPrefix . $lockVersion, false);
+            $manipulator->addLink($configKey, $package, $constraintPrefix . $lockVersion);
 
             self::writeMessage(
                 $io,
@@ -208,14 +207,14 @@ final class Bumper
                 $package,
                 $configKey === 'require-dev' ? ' dev' : '',
                 $version,
-                '^' . $lockVersion
+                $constraintPrefix . $lockVersion
             );
         }
     }
 
     private static function isSimilar(string $version, string $lockVersion): bool
     {
-        return trim($version, '^v') === trim($lockVersion, '^v');
+        return trim($version, '~^v') === trim($lockVersion, '~^v');
     }
 
     private static function isLockedVersion(string $version): bool

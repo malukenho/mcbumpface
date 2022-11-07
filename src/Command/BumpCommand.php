@@ -26,20 +26,24 @@ final class BumpCommand extends BaseCommand
 
         $this->addOption(
             Options::OPTION_STRIP_PREFIX,
-            's',
+            null,
             InputOption::VALUE_REQUIRED,
-            'Strip "v" prefix from versions (e.g. "^v1.3.0" becomes "^1.3.0").'
+            'Setting this to false will keep the "v" prefix in version numbers (e.g. "^v1.3.0" becomes "^1.3.0").'
+        );
+
+        $this->addOption(
+            Options::OPTION_KEEP_VERSION_CONSTRAINT_PREFIX,
+            null,
+            InputOption::VALUE_REQUIRED,
+            'Setting this to false will replace the version constraint prefix (e.g. "~1.3.0" becomes "^1.3.0").'
         );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $composer = $this->getComposer();
-        if ($composer === null) {
-            return 1;
-        }
+        $composer = $this->requireComposer();
 
         Bumper::versions($composer, $this->getIO(), $input);
-        return 0;
+        return self::SUCCESS;
     }
 }

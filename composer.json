@@ -20,12 +20,14 @@
     "require-dev": {
         "ext-json": "*",
         "ext-zip": "*",
-        "composer/composer": "^2.2.1",
-        "laminas/laminas-coding-standard": "^2.3.0",
+        "composer/composer": "^2.4.1",
+        "infection/infection": "^0.26.13",
+        "laminas/laminas-coding-standard": "~2.3.0",
         "phpspec/prophecy-phpunit": "^2.0.1",
-        "phpunit/phpunit": "^9.5.21",
-        "psalm/plugin-phpunit": "^0.15.2",
-        "vimeo/psalm": "^v4.15.0"
+        "phpunit/phpunit": "^9.5.22",
+        "psalm/plugin-phpunit": "^0.17.0",
+        "staabm/annotate-pull-request-from-checkstyle": "^1.8.3",
+        "vimeo/psalm": "^4.26.0"
     },
     "conflict": {
         "symfony/process": "<4.4.30"
