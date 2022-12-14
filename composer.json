@@ -17,7 +17,7 @@
         "ext-json": "*",
         "ext-zip": "*",
         "composer/composer": "^1.9.3 || ^2.0.2",
-        "doctrine/coding-standard": "^9.0.0",
+        "doctrine/coding-standard": "^11.0.0",
         "infection/infection": "^0.26.13",
         "staabm/annotate-pull-request-from-checkstyle": "^1.8.3",
         "phpunit/phpunit": "^9.5.21"
