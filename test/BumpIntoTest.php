@@ -85,6 +85,13 @@ final class BumpIntoTest extends TestCase
             'expected' => ['malukenho/docheader' => '^1.0.0'],
         ];
 
+        yield '^2.1.0 - include implicit `.0` patch version when only major+minor are installed' => [
+            'package' => 'bentools/iterable-functions',
+            'required_version' => '^2.1.0',
+            'installed_version' => '2.1',
+            'expected' => ['bentools/iterable-functions' => '^2.1.0'],
+        ];
+
         yield 'version with leading "v" char' => [
             'package' => 'malukenho/docheader',
             'required_version' => '^1.0',
