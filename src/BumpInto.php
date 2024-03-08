@@ -146,7 +146,7 @@ final class BumpInto implements PluginInterface, EventSubscriberInterface
                 $package,
                 $configKey === 'require-dev' ? ' dev' : '',
                 $version,
-                '^' . $lockVersion
+                $constraintPrefix . $lockVersion
             ));
         }
     }
